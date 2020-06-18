@@ -15,10 +15,24 @@ echo "Starting slurm job"
 RES=$(sbatch $ARGS /home/software/utilities/rstudio-server/rstudio-server.sbatch)
 JOBNO=${RES##* }
 echo "Job number: $JOBNO"
-echo "Press ^C or close terminal to cancel job"
+echo "Waiting for JOBID $JOBNO to start"
+while true; do
+    sleep 1s
+    # Check job status
+    STATUS=$(squeue -j $JOBNO -t PD,R -h -o %t)
+    if [ "$STATUS" = "R" ]
+    then
+        break
+    elif [ "$STATUS" != "PD" ]
+    then
+        echo "Job is not Running or Pending. Aborting"
+        scancel $JOBNO
+        exit 1
+    fi
 trap "catch $JOBNO" ERR EXIT SIGINT SIGTERM KILL
 sleep 5
-TIMELIMIT=$(sacct -j $JOBNO --format=timelimitraw --noheader | tr -d " \t\n\r") 
+TIMELIMIT=$(sacct -j $JOBNO --format=timelimitraw --noheader | tr -d " \t\n\r")
+echo "Press ^C or close terminal to cancel job"
 echo "Your job will be terminated in $TIMELIMIT minutes"
 echo "MAKE SURE YOU SAVE YOUR WORK"
 tail -f "$HOME"/rstudio-"$JOBNO".out
