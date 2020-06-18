@@ -22,19 +22,3 @@ TIMELIMIT=$(sacct -j $JOBNO --format=timelimitraw --noheader | tr -d " \t\n\r")
 echo "Your job will be terminated in $TIMELIMIT minutes"
 echo "MAKE SURE YOU SAVE YOUR WORK"
 tail -f "$HOME"/rstudio-"$JOBNO".out
-#while true
-#do
-#	ELAPSED=$(sacct -j $JOBNO --format=elapsedraw --noheader | tr -d " \t\n\r")
-#	echo $ELAPSED
-#	REMAIN=$(( $TIMELIMITSECS - $ELAPSED ))
-#	echo $REMAIN
-#	if [ $REMAIN -lt 60 ]
-#	then
-#		echo "Your session will end in less than a minute"
-#		echo "SAVE YOUR SESSION NOW IF YOU WANT TO KEEP IT"
-#		tput bel
-#		sleep 60
-#		exit
-#	fi
-#	sleep 1
-#done
