@@ -18,7 +18,7 @@ module load singularity-3.4.1-gcc-9.2.0-w62nicu
 readonly PORT=$(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
 cat << EOF
-Connect to http://${HOSTNAME}:${PORT} using the credentials:
+Connect to http://${HOSTNAME}.cri.camres.org:${PORT} using the credentials:
 user: ${USER}
 pass: ${RSTUDIO_PASSWORD}
 EOF
