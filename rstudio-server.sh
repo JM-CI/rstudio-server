@@ -1,38 +1,43 @@
 #!/bin/bash
 
-catch() {
-	local JOBNO=$1
-	echo "Killing slurm job"
-	scancel $JOBNO
-	# Necessary to bury the output as this seems to get exectued more than
-	# once on a sigint for example...
-	rm "$HOME"/rstudio-"$JOBNO".out > /dev/null 2>&1
-	exit
+SBATCH=/home/software/utilities/rstudio-server/rstudio-server.sbatch
+WORK_DIR=~/.rstudio-server-cri
+
+# Make the local working dir
+if [ ! -d "$WORK_DIR"/.config ]
+then
+    mkdir -p "$WORK_DIR"/.config
+fi
+
+# Catch block to trigger on SIGINT or TERM EXIT
+cleanup() {
+    local JOBNO=$1
+    echo "Killing slurm job $JOBNO"
+    scancel $JOBNO
+    exit
 }
 
 ARGS="$@"
-echo "Starting slurm job"
-RES=$(sbatch $ARGS /home/software/utilities/rstudio-server/rstudio-server.sbatch)
+
+echo -e "Starting rstudio server..."
+RES=$(sbatch --output=$WORK_DIR/rstudio-server-out.%j --error=$WORK_DIR/rstudio-server-err.%j $ARGS $SBATCH)
 JOBNO=${RES##* }
-echo "Job number: $JOBNO"
-echo "Waiting for JOBID $JOBNO to start"
-while true; do
+#touch $WORK_DIR/rstudio-server-err."$JOBNO"
+
+while true
+do
     sleep 1s
-    # Check job status
     STATUS=$(squeue -j $JOBNO -t PD,R -h -o %t)
     if [ "$STATUS" = "R" ]
     then
         break
     elif [ "$STATUS" != "PD" ]
     then
-        echo "Job is not Running or Pending. Aborting"
-        scancel $JOBNO
+        echo "Job neither running nor pending, aborting"
+        cleanup $JOBNO
         exit 1
     fi
-trap "catch $JOBNO" ERR EXIT SIGINT SIGTERM KILL
-sleep 5
-TIMELIMIT=$(sacct -j $JOBNO --format=timelimitraw --noheader | tr -d " \t\n\r")
-echo "Press ^C or close terminal to cancel job"
-echo "Your job will be terminated in $TIMELIMIT minutes"
-echo "MAKE SURE YOU SAVE YOUR WORK"
-tail -f "$HOME"/rstudio-"$JOBNO".out
+done
+echo "Job $JOBNO started"
+trap "cleanup $JOBNO" ERR EXIT SIGINT SIGTERM KILL
+tail -n 50 -f $WORK_DIR/rstudio-server-err."$JOBNO" 
