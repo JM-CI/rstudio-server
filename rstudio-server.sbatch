@@ -59,7 +59,7 @@ If you close this terminal or press ^C, this slurm job will terminate.
 By default this session will last for four hours.
 END
 
-singularity exec --cleanenv $RSTUDIO_SERVER_IMAGE\
+singularity exec $RSTUDIO_SERVER_IMAGE\
     rserver --www-port ${PORT} \
             --auth-none=0 \
             --auth-pam-helper-path=pam-helper \
