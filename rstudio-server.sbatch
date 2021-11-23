@@ -6,7 +6,7 @@
 #SBATCH --mem=8192
 #SBATCH --output=/home/%u/rstudio-server.job.%j
 
-LATEST_IMAGE=/home/software/images/rstudio_latest.sif
+LATEST_IMAGE=/home/software/images/rstudio-server/rstudio_latest.sif
 
 # Create temporary directory to be populated with directories to bind-mount in the container
 # where writable file systems are necessary. Adjust path as appropriate for your computing environment.
@@ -34,7 +34,7 @@ END
 
 chmod +x ${workdir}/rsession.sh
 
-export SINGULARITY_BIND="${workdir}/run:/run,${workdir}/tmp:/tmp,${workdir}/database.conf:/etc/rstudio/database.conf,${workdir}/rsession.sh:/etc/rstudio/rsession.sh,${workdir}/var/lib/rstudio-server:/var/lib/rstudio-server,/mnt/scratcha:/mnt/scratcha,/mnt/scratchb:/mnt/scratchb"
+export SINGULARITY_BIND="${workdir}/run:/run,${workdir}/tmp:/tmp,${workdir}/database.conf:/etc/rstudio/database.conf,${workdir}/rsession.sh:/etc/rstudio/rsession.sh,${workdir}/var/lib/rstudio-server:/var/lib/rstudio-server,/mnt/scratcha:/mnt/scratcha,/mnt/scratchb:/mnt/scratchb,/scratcha:/scratcha,/scratchb:/scratchb"
 
 # Do not suspend idle sessions.
 # Alternative to setting session-timeout-minutes=0 in /etc/rstudio/rsession.conf
