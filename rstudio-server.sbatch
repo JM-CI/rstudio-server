@@ -6,8 +6,6 @@
 #SBATCH --mem=8192
 #SBATCH --output=/home/%u/rstudio-server.job.%j
 
-LATEST_IMAGE=/home/software/images/rstudio-server/rstudio_latest.sif
-
 # Create temporary directory to be populated with directories to bind-mount in the container
 # where writable file systems are necessary. Adjust path as appropriate for your computing environment.
 workdir=$(python -c 'import tempfile; print(tempfile.mkdtemp())')
@@ -61,7 +59,7 @@ If you close this terminal or press ^C, this slurm job will terminate.
 By default this session will last for four hours.
 END
 
-singularity exec --cleanenv $LATEST_IMAGE \
+singularity exec --cleanenv $RSTUDIO_SERVER_IMAGE\
     rserver --www-port ${PORT} \
             --auth-none=0 \
             --auth-pam-helper-path=pam-helper \

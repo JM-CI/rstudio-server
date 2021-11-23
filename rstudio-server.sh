@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SBATCH=/home/software/utilities/rstudio-server/rstudio-server.sbatch
+IMAGE_DIR=/home/software/images/rstudio-server
 WORK_DIR=~/.rstudio-server-cri
 
 # Make the local working dir
@@ -19,10 +20,19 @@ cleanup() {
 
 ARGS="$@"
 
-echo -e "Starting rstudio server..."
-RES=$(sbatch --output=$WORK_DIR/rstudio-server-out.%j --error=$WORK_DIR/rstudio-server-err.%j $ARGS $SBATCH)
-JOBNO=${RES##* }
-#touch $WORK_DIR/rstudio-server-err."$JOBNO"
+echo -e "CRUK Rstudio Server\n\nPlease select a base image to run:\n"
+select ITEM in $(for image in $IMAGE_DIR/*; do basename $image; done)
+do
+    echo -e "$ITEM selected, starting slurm job..."
+    export RSTUDIO_SERVER_IMAGE="$IMAGE_DIR/$ITEM"
+    RES=$(sbatch --output=$WORK_DIR/rstudio-server-out.%j --error=$WORK_DIR/rstudio-server-err.%j $ARGS $SBATCH)
+    JOBNO=${RES##* }
+    break
+done
+
+# Wait for job to be scheduled
+echo -e "Waiting for job $JOBNO to start"
+sleep 2s
 
 while true
 do
