@@ -6,11 +6,10 @@
 #SBATCH --mem=8192
 #SBATCH --output=/home/%u/rstudio-server.job.%j
 
-LATEST_IMAGE=/home/software/images/rstudio-server/rstudio_latest.sif
-
 # Create temporary directory to be populated with directories to bind-mount in the container
 # where writable file systems are necessary. Adjust path as appropriate for your computing environment.
-workdir=$(python -c 'import tempfile; print(tempfile.mkdtemp())')
+#workdir=$(python -c 'import tempfile; print(tempfile.mkdtemp())')
+workdir=$RSTUDIO_WORK_DIR
 
 mkdir -p -m 700 ${workdir}/run ${workdir}/tmp ${workdir}/var/lib/rstudio-server
 cat > ${workdir}/database.conf <<END
@@ -25,16 +24,18 @@ END
 # Set R_LIBS_USER to a path specific to rocker/rstudio to avoid conflicts with
 # personal libraries from any R installation in the host environment
 
+# export R_LIBS_USER=${HOME}/R/rocker-rstudio/4.0
+
 cat > ${workdir}/rsession.sh <<END
 #!/bin/sh
 export OMP_NUM_THREADS=${SLURM_JOB_CPUS_PER_NODE}
-export R_LIBS_USER=${HOME}/R/rocker-rstudio/4.0
 exec rsession "\${@}"
 END
 
 chmod +x ${workdir}/rsession.sh
 
-export SINGULARITY_BIND="${workdir}/run:/run,${workdir}/tmp:/tmp,${workdir}/database.conf:/etc/rstudio/database.conf,${workdir}/rsession.sh:/etc/rstudio/rsession.sh,${workdir}/var/lib/rstudio-server:/var/lib/rstudio-server,/mnt/scratcha:/mnt/scratcha,/mnt/scratchb:/mnt/scratchb,/scratcha:/scratcha,/scratchb:/scratchb"
+export SINGULARITY_BIND="${workdir}/run:/run,${workdir}/tmp:/tmp,${workdir}/database.conf:/etc/rstudio/database.conf,${workdir}/rsession.sh:/etc/rstudio/rsession.sh,${workdir}/var/lib/rstudio-server:/var/lib/rstudio-server,/mnt/scratcha:/mnt/scratcha,/mnt/scratchb:/mnt/scratchb,/scratcha:/scratcha,/scratchb:/scratchb,/usr:/mnt/host_usr"
+#Now that system libs have been included
 
 # Do not suspend idle sessions.
 # Alternative to setting session-timeout-minutes=0 in /etc/rstudio/rsession.conf
@@ -61,11 +62,12 @@ If you close this terminal or press ^C, this slurm job will terminate.
 By default this session will last for four hours.
 END
 
-singularity exec --cleanenv $LATEST_IMAGE \
+singularity exec $RSTUDIO_SERVER_IMAGE\
     rserver --www-port ${PORT} \
             --auth-none=0 \
             --auth-pam-helper-path=pam-helper \
             --auth-stay-signed-in-days=30 \
             --auth-timeout-minutes=0 \
+            --server-user $SINGULARITYENV_USER \
             --rsession-path=/etc/rstudio/rsession.sh
 printf 'rserver exited' 1>&2
