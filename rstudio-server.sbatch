@@ -6,6 +6,10 @@
 #SBATCH --mem=8192
 #SBATCH --output=/home/%u/rstudio-server.job.%j
 
+# Source spack stuff for new partitions
+source /home/software/spack/share/spack/setup-env.sh
+spack load singularity@3.7.1
+
 # Create temporary directory to be populated with directories to bind-mount in the container
 # where writable file systems are necessary. Adjust path as appropriate for your computing environment.
 #workdir=$(python -c 'import tempfile; print(tempfile.mkdtemp())')
