@@ -8,7 +8,7 @@
 
 # Source spack stuff for new partitions
 source /home/software/spack/share/spack/setup-env.sh
-spack load singularity@3.8.4
+spack load singularity@3.8.5
 
 # Create temporary directory to be populated with directories to bind-mount in the container
 # where writable file systems are necessary. Adjust path as appropriate for your computing environment.
