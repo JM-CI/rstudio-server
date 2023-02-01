@@ -38,7 +38,14 @@ END
 
 chmod +x ${workdir}/rsession.sh
 
-export SINGULARITY_BIND="${workdir}/run:/run,${workdir}/tmp:/tmp,${workdir}/database.conf:/etc/rstudio/database.conf,${workdir}/rsession.sh:/etc/rstudio/rsession.sh,${workdir}/var/lib/rstudio-server:/var/lib/rstudio-server,/mnt/scratcha:/mnt/scratcha,/mnt/scratchb:/mnt/scratchb,/scratcha:/scratcha,/scratchb:/scratchb,/usr:/mnt/host_usr"
+if [ -d "/mnt/scratcha/" ]
+then
+    SCRATCH="/mnt/scratcha:/mnt/scratcha,/mnt/scratchb:/mnt/scratchb,/scratcha:/scratcha,/scratchb:/scratchb"
+else
+    SCRATCH="/mnt/scratchc:/mnt/scratchc,/scratchc:/scratchc"
+fi
+
+export SINGULARITY_BIND="${workdir}/run:/run,${workdir}/tmp:/tmp,${workdir}/database.conf:/etc/rstudio/database.conf,${workdir}/rsession.sh:/etc/rstudio/rsession.sh,${workdir}/var/lib/rstudio-server:/var/lib/rstudio-server,$SCRATCH,/usr:/mnt/host_usr"
 #Now that system libs have been included
 
 # Do not suspend idle sessions.
