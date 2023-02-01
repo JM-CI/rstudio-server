@@ -15,8 +15,8 @@ spack load singularity@3.8.5
 #workdir=$(python -c 'import tempfile; print(tempfile.mkdtemp())')
 workdir=$RSTUDIO_WORK_DIR
 
-mkdir -p -m 700 ${workdir}/run ${workdir}/tmp ${workdir}/var/lib/rstudio-server
-cat > ${workdir}/database.conf <<END
+mkdir -p -m 700 ${workdir}/run ${workdir}/tmp ${workdir}/var/lib/rstudio-server ${workdir}/etc/rstudio
+cat > ${workdir}/etc/rstudio/database.conf <<END
 provider=sqlite
 directory=/var/lib/rstudio-server
 END
@@ -30,13 +30,13 @@ END
 
 # export R_LIBS_USER=${HOME}/R/rocker-rstudio/4.0
 
-cat > ${workdir}/rsession.sh <<END
+cat > ${workdir}/etc/rstudio/rsession.sh <<END
 #!/bin/sh
 export OMP_NUM_THREADS=${SLURM_JOB_CPUS_PER_NODE}
 exec rsession "\${@}"
 END
 
-chmod +x ${workdir}/rsession.sh
+chmod +x ${workdir}/etc/rstudio/rsession.sh
 
 if [ -d "/mnt/scratcha/" ]
 then
@@ -45,7 +45,7 @@ else
     SCRATCH="/mnt/scratchc:/mnt/scratchc,/scratchc:/scratchc"
 fi
 
-export SINGULARITY_BIND="${workdir}/run:/run,${workdir}/tmp:/tmp,${workdir}/database.conf:/etc/rstudio/database.conf,${workdir}/rsession.sh:/etc/rstudio/rsession.sh,${workdir}/var/lib/rstudio-server:/var/lib/rstudio-server,${SCRATCH},/usr:/mnt/host_usr"
+export SINGULARITY_BIND="${workdir}/run:/run,${workdir}/tmp:/tmp,${workdir}/etc/rstudio:/etc/rstudio,${workdir}/var/lib/rstudio-server:/var/lib/rstudio-server,${SCRATCH},/usr:/mnt/host_usr"
 #Now that system libs have been included
 
 # Do not suspend idle sessions.
