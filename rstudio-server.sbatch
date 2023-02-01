@@ -8,7 +8,7 @@
 
 # Source spack stuff for new partitions
 source /home/software/spack/share/spack/setup-env.sh
-spack load singularity@3.7.1
+spack load singularity@3.8.4
 
 # Create temporary directory to be populated with directories to bind-mount in the container
 # where writable file systems are necessary. Adjust path as appropriate for your computing environment.
@@ -63,7 +63,7 @@ You can login using:
     pass: ${SINGULARITYENV_PASSWORD}
 
 If you close this terminal or press ^C, this slurm job will terminate.
-By default this session will last for four hours.
+By default this session will last for eight hours.
 END
 
 singularity exec $RSTUDIO_SERVER_IMAGE\

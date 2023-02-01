@@ -50,4 +50,4 @@ do
 done
 echo "Job $JOBNO started"
 trap "cleanup $JOBNO" ERR EXIT SIGINT SIGTERM KILL
-tail -n 50 -f $RSTUDIO_WORK_DIR/rstudio-server-err."$JOBNO" 
+tail -n 50 -f $RSTUDIO_WORK_DIR/rstudio-server-err."$JOBNO"
