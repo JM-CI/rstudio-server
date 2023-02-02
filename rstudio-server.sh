@@ -32,7 +32,7 @@ done
 
 # Wait for job to be scheduled
 echo -e "Waiting for job $JOBNO to start"
-sleep 2s
+sleep 5s
 
 while true
 do
