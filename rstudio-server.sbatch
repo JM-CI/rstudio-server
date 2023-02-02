@@ -33,7 +33,7 @@ END
 cat > ${workdir}/etc/rstudio/rsession.sh <<END
 #!/bin/sh
 export OMP_NUM_THREADS=${SLURM_JOB_CPUS_PER_NODE}
-exec rsession "\${@}"
+exec /usr/lib/rstudio-server/bin/rsession "\${@}"
 END
 
 chmod +x ${workdir}/etc/rstudio/rsession.sh
