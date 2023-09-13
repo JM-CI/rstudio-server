@@ -4,7 +4,8 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=8192
-#SBATCH --output=/home/%u/rstudio-server.job.%j
+#SBATCH --output=/home/%u/rstudio-server-cri/rstudio-server.%j.out
+#SBATCH --error=/home/%u/.rstudio-server-cri/rstudio-server.%j.err
 
 # SPACK IS BROKEN
 # Source spack stuff for new partitions
